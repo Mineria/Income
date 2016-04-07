@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
-
 import pandas as pd
 import numpy as np
 import pylab as P
+from data_conversion import *
 
 # Creating dataframe with CSV file
 df = pd.read_csv('Data/data.csv', header=0);
 
 # Normalising non-continuous parameters (given in string)
-# df['workclass'] = df['workclass'].map( lambda x: workclass(x) ).astype(int)
-# df['education'] = df['education'].map( lambda x: education(x) ).astype(int)
-# df['marital-status'] = df['marital-status'].map( lambda x: marital_status(x) ).astype(int)
-# df['occupation'] = df['occupation'].map( lambda x: occupation(x) ).astype(int)
-# df['relationship'] = df['relationship'].map( lambda x: relationship(x) ).astype(int)
-# df['race'] = df['race'].map( lambda x: race(x) ).astype(int)
-# df['sex'] = df['sex'].map( {'Female': 0, 'Male': 1} ).astype(int)
-# df['native-country'] = df['native-country'].map( lambda x: native_country(x) ).astype(int)
+df['workclass'] = df['workclass'].map( lambda x: workclass(x) ).astype(int)
+df['education'] = df['education'].map( lambda x: education(x) ).astype(int)
+df['marital-status'] = df['marital-status'].map( lambda x: marital_status(x) ).astype(int)
+df['occupation'] = df['occupation'].map( lambda x: occupation(x) ).astype(int)
+df['relationship'] = df['relationship'].map( lambda x: relationship(x) ).astype(int)
+df['race'] = df['race'].map( lambda x: race(x) ).astype(int)
+df['sex'] = df['sex'].map( {'Female': 0, 'Male': 1} ).astype(int)
+df['native-country'] = df['native-country'].map( lambda x: native_country(x) ).astype(int)
+df['income'] = df['income'].map( lambda x: income(x) ).astype(int)
 
 # Check the our dataframse is only containing numbers
 df.dtypes[df.dtypes.map(lambda x: x=='object')]
@@ -27,8 +28,6 @@ df.dtypes[df.dtypes.map(lambda x: x=='object')]
 df = df.drop(df.columns[0], axis=1)
 
 train_data = df.values
-print train_data[2]
-
 
 #
 # # Get information
