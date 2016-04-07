@@ -30,3 +30,43 @@ print train_df
 # Workclass = list(enumerate(np.unique(train_df['workclass'])))    # determine all values of Embarked,
 # Workclass_dict = { name : i for i, name in Workclass }              # set up a dictionary in the form  Ports : index
 train_df.Embarked = train_df.Embarked.map( lambda x: Workclass_dict[x]).astype(int)     # Convert all Embark strings to int
+
+
+
+
+
+
+#
+# (row, col) = test_data.shape
+# for i in range(row):
+#     row = ""
+#     for j in range(col):
+#         row += str(test_data[i][j]) + " "
+#     print row
+
+#
+# # Get information
+# print df.info()
+# #print df.describe()
+# # Get columns type
+# #print df.dtypes
+#
+# # Filter columns
+# #print df[(df['income'] == '>50K') & (df['sex'] == 'female')][['age']]
+# print df[df['income'].isnull()][['age', 'sex', 'race']]
+#
+# df['age'].hist()
+# P.show()
+#
+#
+# # Display specific columns
+# #print df[ ['age', 'workclass']]
+#
+# #
+# # print type(df['age'])
+# #
+# # for age in df['age'][0:10]:
+# #     print age
+# # print df['age'][0:10]
+
+

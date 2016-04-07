@@ -146,8 +146,8 @@ def native_country(paisNativo):
 
 def income(income):
 	value = 0
-	if income == ">50K":
-		value = 1
-	elif income == "<=50K":
+	if income == "<=50K":
 		value = 0
+	elif income == ">50K":
+		value = 1
 	return value
