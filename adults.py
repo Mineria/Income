@@ -28,6 +28,12 @@ df.dtypes[df.dtypes.map(lambda x: x=='object')]
 df = df.drop(df.columns[0], axis=1)
 
 train_data = df.values
+(row, col) = train_data.shape
+for i in range(row):
+    row = ""
+    for j in range(col):
+        row += str(train_data[i][j]) + " "
+    print row
 
 #
 # # Get information
