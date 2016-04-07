@@ -29,4 +29,4 @@ print train_df
 #
 # Workclass = list(enumerate(np.unique(train_df['workclass'])))    # determine all values of Embarked,
 # Workclass_dict = { name : i for i, name in Workclass }              # set up a dictionary in the form  Ports : index
-# train_df.Embarked = train_df.Embarked.map( lambda x: Workclass_dict[x]).astype(int)     # Convert all Embark strings to int
+train_df.Embarked = train_df.Embarked.map( lambda x: Workclass_dict[x]).astype(int)     # Convert all Embark strings to int
