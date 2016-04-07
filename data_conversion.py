@@ -130,16 +130,24 @@ def sex(sexo):
 	return valor
 
 def native_country(paisNativo):
-	if paisNativo == 'Female':
-		valor = 0
-	else:
+	if paisNativo == 'United-States':
 		valor = 1
+	elif (paisNativo == 'England') or ( paisNativo == 'Canada') or ( paisNativo == 'Germany') or ( paisNativo == 'Japan'):
+		valor = 2
+	elif (paisNativo == 'Greece') or ( paisNativo == 'Italy') or ( paisNativo == 'Poland') or ( paisNativo == 'Portugal') or ( paisNativo == 'Ireland') or ( paisNativo == 'France') or ( paisNativo == 'Hungary') or ( paisNativo == 'Scotland') or ( paisNativo == 'Yugoslavia') or ( paisNativo == 'Holand-Netherlands'):
+		valor = 3
+	elif (paisNativo == 'Puerto-Rico') or ( paisNativo == 'Outlying-US(Guam-USVI-etc)') or ( paisNativo == 'South') or ( paisNativo == 'Cuba') or ( paisNativo == 'Honduras') or ( paisNativo == 'Mexico') or ( paisNativo == ' Dominican-Republic') or ( paisNativo == 'Ecuador') or ( paisNativo == 'Columbia') or ( paisNativo == 'Guatemala') or ( paisNativo == 'Nicaragua') or ( paisNativo == 'El-Salvador') or ( paisNativo == 'Trinadad&Tobago') or ( paisNativo == 'Peru'):
+		valor = 4
+	elif (paisNativo == 'Cambodia') or ( paisNativo == 'India') or ( paisNativo == 'China') or ( paisNativo == 'Iran') or ( paisNativo == 'Vietnam') or ( paisNativo == 'Philippines') or ( paisNativo == 'Laos') or ( paisNativo == 'Taiwan') or ( paisNativo == 'Thailand') or ( paisNativo == 'Hong')  :
+		valor = 5
+	else:
+		valor = 0
 	return valor
 
 def income(income):
 	value = 0
 	if income == ">50K":
-		value = 0
+		value = 1
 	elif income == "<=50K":
 		value = 0
 	return value
