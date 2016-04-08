@@ -4,8 +4,7 @@ Authors: Jorge Ferreiro & Carlos Reyes.
 """
 import pandas as pd
 import numpy as np
-import pylab as P
-from data_conversion import *
+from income import normalize
 from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -14,20 +13,21 @@ from sklearn.neighbors import NearestNeighbors
 import csv as csv
 from sklearn import svm
 
-calculate_score = True
-classifier_to_use = "neighbors"
-classifier_to_use = "super_vector"
-classifier_to_use = "random_forest"
+# Filesname
+output_file = 'output/adults_prediction.csv'
 
-# Extra options
-verbose = False
+# Configuration options
 n_jobs = -1
-n_estimators = 1000
+verbose = False
 warm_start = False
+n_estimators = 1000
+
+calculate_score = True
+classifier_to_use = "random_forest" # neighbors | super_vector | random_forest
 
 # Creating dataframe with CSV file
-test_df = pd.read_csv('Data/test.csv', header=0) # Load the test file into a dataframe
-data_df = pd.read_csv('Data/data.csv', header=0);
+data_df = pd.read_csv('data/data.csv', header=0) # Load the test file into a dataframe
+test_df = pd.read_csv('data/test.csv', header=0)
 
 def print_configuration():
     print
@@ -42,19 +42,19 @@ def print_configuration():
 def normalise_data(df, test_matrix):
     """Normalising non-continuous parameters (given in string)"""
 
-    df['workclass'] = df['workclass'].map( lambda x: workclass(x) ).astype(int)
-    df['education'] = df['education'].map( lambda x: education(x) ).astype(int)
-    df['marital-status'] = df['marital-status'].map( lambda x: marital_status(x) ).astype(int)
-    df['occupation'] = df['occupation'].map( lambda x: occupation(x) ).astype(int)
-    df['relationship'] = df['relationship'].map( lambda x: relationship(x) ).astype(int)
-    df['race'] = df['race'].map( lambda x: race(x) ).astype(int)
+    df['workclass'] = df['workclass'].map( lambda x: normalize.workclass(x) ).astype(int)
+    df['education'] = df['education'].map( lambda x: normalize.education(x) ).astype(int)
+    df['marital-status'] = df['marital-status'].map( lambda x: normalize.marital_status(x) ).astype(int)
+    df['occupation'] = df['occupation'].map( lambda x: normalize.occupation(x) ).astype(int)
+    df['relationship'] = df['relationship'].map( lambda x: normalize.relationship(x) ).astype(int)
+    df['race'] = df['race'].map( lambda x: normalize.race(x) ).astype(int)
     df['sex'] = df['sex'].map( {'Female': 0, 'Male': 1} ).astype(int)
-    df['native-country'] = df['native-country'].map( lambda x: native_country(x) ).astype(int)
+    df['native-country'] = df['native-country'].map( lambda x: normalize.native_country(x) ).astype(int)
 
     # For the test matrix there is no income
     # So we don't have to normalize it
     if not test_matrix:
-        df['income'] = df['income'].map( lambda x: income(x) ).astype(int)
+        df['income'] = df['income'].map( lambda x: normalize.income(x) ).astype(int)
 
     # Check the our dataframse is only containing numbers
     df.dtypes[df.dtypes.map(lambda x: x=='object')]
@@ -158,7 +158,7 @@ print "****" * 20
 
 
 
-predictions_file = open("adults_output.csv", "wb")
+predictions_file = open( output_file , "wb")
 open_file_object = csv.writer(predictions_file)
 # open_file_object.writerow(["AdultsId","Income"])
 # open_file_object.writerows(zip(ids, output))
