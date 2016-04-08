@@ -4,7 +4,9 @@ import numpy as np
 import pylab as P
 from data_conversion import *
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 import csv as csv
+from sklearn import svm
 
 # Creating dataframe with CSV file
 data_df = pd.read_csv('Data/data.csv', header=0);
@@ -47,11 +49,57 @@ test_data  = normalise_data(test_df, test_matrix=True)
 print test_data.shape
 
 print 'Training...'
-forest = RandomForestClassifier(n_estimators = 200)
-forest = forest.fit(train_data[0:9999,0:13],train_data[0:9999,14])
+#forest = RandomForestClassifier(n_estimators = 200)
+#forest = forest.fit(train_data[0:28000,0:13],train_data[0:28000,14])
+
+
+
+
+
+print "****" * 30 
+
+
+
+
+X = train_data[0:28000,0:13]
+y = train_data[0:28000,14]
+
+#clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
+clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
+print "CLF Done!"
+
+clf.fit(X, y)
+print "CLF FIT Done!"
+
+predition_svm = clf.predict(train_data[28001:30000,0:13])
+print "CLF predictION Done!"
+
+
+x_svm = train_data[28001:30000,14]
+
+total = len(predition_svm)
+ones = 0.0
+
+for i in range(total):
+	if predition_svm[i] == x_svm[i]:
+		ones += 1.0;
+
+accuracy_svm = (ones/total)*100
+print "Accuracy SVM is " + str(accuracy_svm)
+
+
+
+
+
+print "****" * 30 
+
+
+
+
+
 
 # print 'Predicting...'
-predition = forest.predict(train_data[10000:19999,0:13]).astype(int)
+predition = forest.predict(train_data[28001:30000,0:13]).astype(int)
 print type(train_data)
 
 #print predition
@@ -62,11 +110,11 @@ print type(train_data)
 print "*"*14
 
 
-#score = forest.score(train_data[10000:19999,0:13], predition)
-#print "Score..."
-#print score
+score = forest.score(train_data[28001:30000,0:13], train_data[28001:30000,14])
+print "Score..."
+print score
 
-x = train_data[10000:19999,14]
+x = train_data[28001:30000,14]
 
 total = len(predition)
 ones = 0.0
