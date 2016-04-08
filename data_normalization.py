@@ -5,18 +5,18 @@ into their numerical representation
 def workclass(clase):
 	if clase == 'Private':
 		valor = 1
-	elif clase == 'Self-emp-not-inc':
-		valor = 2
-	elif clase == 'Self-emp-inc':
-		valor = 3
+	# elif clase == 'Self-emp-not-inc':
+	# 	valor = 2
+	# elif clase == 'Self-emp-inc':
+	# 	valor = 3
 	elif clase == 'Never-worked':
-		valor = 4
-	elif clase == 'Federal-gov':
-		valor = 5
-	elif clase == 'Local-gov':
-		valor = 6
-	elif clase == 'State-gov':
-		valor = 7
+		valor = 2
+	# elif clase == 'Federal-gov':
+	# 	valor = 5
+	# elif clase == 'Local-gov':
+	# 	valor = 6
+	# elif clase == 'State-gov':
+	# 	valor = 7
 	else:
 		valor = 0
 	return valor
@@ -112,12 +112,8 @@ def relationship(relacion):
 def race(raza):
 	if raza == 'White':
 		valor = 1
-	elif raza == 'Asian-Pac-Islander':
+	elif raza == 'Black' or raza == 'Amer-Indian-Eskimo' or raza == 'Asian-Pac-Islander':
 		valor = 2
-	elif raza == 'Amer-Indian-Eskimo':
-		valor = 3
-	elif raza == 'Black':
-		valor = 4
 	else:
 		valor = 0
 	return valor
