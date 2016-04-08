@@ -62,7 +62,9 @@ def normalise_data(df, test_matrix):
     # Delete unused columns
     # Delete first column refering to user index
     df = df.drop(df.columns[0], axis=1)
-    #df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], axis=1)
+    #df = df.drop(["workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country"], axis=1)
+    #df = df.drop(["workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","hours-per-week"], axis=1)
+    # df = df.drop(["capital-gain","capital-loss"], axis=1)
 
     return df.values
 
@@ -75,11 +77,11 @@ ids = test_df[test_df.columns[0]]
 train_data = normalise_data(data_df, test_matrix=False)
 test_data  = normalise_data(test_df, test_matrix=True)
 
-X = train_data[0:28000, 0:-2] #-2 = all features except result column
-y = train_data[0:28000,-1] #-1 = last column with results (14)
+X = train_data[5000:25000, 0:-2] #-2 = all features except result column
+y = train_data[5000:25000,-1] #-1 = last column with results (14)
 
-X_predict = train_data[28001:30000, 0:-2] #-2 = all features except result column
-y_predict = train_data[28001:30000, -1] #-1 = last column with results (14)
+X_predict = train_data[26000:33000, 0:-2] #-2 = all features except result column
+y_predict = train_data[26000:33000, -1] #-1 = last column with results (14)
 
 # X_predict = test_data[0::, 0:13]
 # y_predict = []
