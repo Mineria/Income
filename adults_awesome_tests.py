@@ -40,41 +40,46 @@ def normalise_data(df, test_matrix):
 # Get Adults IDs from Test before delete the column
 ids = test_df[test_df.columns[0]]
 
-
 # Normalize Data and remove ID
 train_data = normalise_data(data_df, test_matrix=False)
 test_data  = normalise_data(test_df, test_matrix=True)
 
-print "train_data[0::,1::]"
-print train_data[0::,1::]
-print "train_data[0::,14]"
-print train_data[0::,14]
-
 print test_data.shape
 
 print 'Training...'
-forest = RandomForestClassifier(n_estimators = 100)
-forest = forest.fit(train_data[0:11000,0:13], train_data[0:11000,14])
-
-print "Test data shape"
-print train_data.shape
-
-print "Test data shape"
-print test_data.shape
+forest = RandomForestClassifier(n_estimators = 200)
+forest = forest.fit(train_data[0:9999,0:13],train_data[0:9999,14])
 
 # print 'Predicting...'
-predition = forest.predict(test_data[0::,0:13]).astype(int)
+predition = forest.predict(train_data[10000:19999,0:13]).astype(int)
+print type(train_data)
 
-#score = forest.score(predition[0::,1::], test_data[0::,1::])
-score = forest.score(test_data[0::,0:13], predition)
-score = forest.score(train_data[0::,0:13], train_data[0::,0:14])
+#print predition
+#print "*"*14
+#print train_data[11001:18000,14]
+#print predition
+
+print "*"*14
 
 
-print "Score"
-print score
+#score = forest.score(train_data[10000:19999,0:13], predition)
+#print "Score..."
+#print score
 
-#for i in range(10):
-#    print output[i]
+x = train_data[10000:19999,14]
+
+total = len(predition)
+ones = 0.0
+
+for i in range(len(predition)):
+	if predition[i] == x[i]:
+		ones += 1.0;
+
+accuracy = (ones/total)*100
+
+print "Ones is " + str(ones)
+print "Total is " + str(total)
+print "Accuracy is " + str(accuracy)
 
 # test_data_with_output = array(test_data)
 # (test_rows, test_colums) = test_data.shape
@@ -87,7 +92,7 @@ predictions_file = open("adults_output.csv", "wb")
 open_file_object = csv.writer(predictions_file)
 # open_file_object.writerow(["AdultsId","Income"])
 # open_file_object.writerows(zip(ids, output))
-open_file_object.writerows(zip(output))
+open_file_object.writerows(zip(predition))
 predictions_file.close()
 print 'Done.'
 
