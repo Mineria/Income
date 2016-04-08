@@ -20,6 +20,8 @@
 - Referencing and filtering
   ```Python
   df['Age'][0:10]
+  df[df['income'] == '>50K'][['age', 'sex', 'race']]
+  df[df['income'].isnull()][['age', 'sex', 'race']]
   ```
 - Get type of a column.
   ```Python
