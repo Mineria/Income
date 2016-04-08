@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+""" Predicting income for American workers
+Authors: Jorge Ferreiro & Carlos Reyes.
+"""
 import pandas as pd
 import numpy as np
 import pylab as P
-from data_conversion import *
+from data_normalization import *
 from sklearn.ensemble import RandomForestClassifier
 import csv as csv
 
@@ -32,7 +35,7 @@ def normalise_data(df, test_matrix):
 
     # Delete unused columns
     # Delete first column refering to user index
-    df = df.drop(df.columns[0], axis=1)  
+    df = df.drop(df.columns[0], axis=1)
     #df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], axis=1)
 
     return df.values
@@ -81,7 +84,7 @@ print score
 # last_col = test_colums
 
 # for i in range(test_rows):
-#     test_data_with_output[i,last_col] 
+#     test_data_with_output[i,last_col]
 
 predictions_file = open("adults_output.csv", "wb")
 open_file_object = csv.writer(predictions_file)
@@ -90,5 +93,3 @@ open_file_object = csv.writer(predictions_file)
 open_file_object.writerows(zip(output))
 predictions_file.close()
 print 'Done.'
-
-

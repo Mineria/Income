@@ -6,17 +6,38 @@ import pandas as pd
 import numpy as np
 import pylab as P
 from data_conversion import *
+from sklearn.cross_validation import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import NearestNeighbors
 import csv as csv
 from sklearn import svm
 
-classifier_to_use = "random_forest"
+calculate_score = True
+classifier_to_use = "neighbors"
 classifier_to_use = "super_vector"
+classifier_to_use = "random_forest"
+
+# Extra options
+verbose = False
+n_jobs = -1
+n_estimators = 1000
+warm_start = False
 
 # Creating dataframe with CSV file
-data_df = pd.read_csv('Data/data.csv', header=0);
 test_df = pd.read_csv('Data/test.csv', header=0) # Load the test file into a dataframe
+data_df = pd.read_csv('Data/data.csv', header=0);
+
+def print_configuration():
+    print
+    print "*** Configuration " + "*" * 30
+    print "Classifier: " + str(classifier_to_use or "No Classifier")
+    print "Verbose: " + str(verbose or "No verbose")
+    print "n_estimators: " + str(n_estimators or "No n_estimators")
+    print "warm_start: " + str(warm_start or "No warm_start")
+    print "n_jobs: " + str(n_jobs or "No n_jobs")
+    print
 
 def normalise_data(df, test_matrix):
     """Normalising non-continuous parameters (given in string)"""
@@ -45,6 +66,8 @@ def normalise_data(df, test_matrix):
 
     return df.values
 
+print_configuration()
+
 # Get Adults IDs from Test before delete the column
 ids = test_df[test_df.columns[0]]
 
@@ -52,17 +75,18 @@ ids = test_df[test_df.columns[0]]
 train_data = normalise_data(data_df, test_matrix=False)
 test_data  = normalise_data(test_df, test_matrix=True)
 
-X = train_data[0:28000,0:13]
-y = train_data[0:28000,14]
+X = train_data[0:28000, 0:-2] #-2 = all features except result column
+y = train_data[0:28000,-1] #-1 = last column with results (14)
 
-X_predict = train_data[28001:30000, 0:13]
-y_predict = train_data[28001:30000, 14]
+X_predict = train_data[28001:30000, 0:-2] #-2 = all features except result column
+y_predict = train_data[28001:30000, -1] #-1 = last column with results (14)
 
-print '***********' * 10
+# X_predict = test_data[0::, 0:13]
+# y_predict = []
 
 if classifier_to_use == "random_forest":
 
-    forest = RandomForestClassifier(n_estimators = 200)
+    forest = RandomForestClassifier(n_estimators=n_estimators, n_jobs=n_jobs, verbose=verbose, warm_start=warm_start)#criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, random_state=None, verbose=1, warm_start=False, class_weight=None)
 
     print 'Training...'
     forest = forest.fit(X, y)
@@ -70,10 +94,11 @@ if classifier_to_use == "random_forest":
     print 'Predicting...'
     predition = forest.predict(X_predict).astype(int)
 
-    print "Score..."
-    score = forest.score(X_predict, y_predict)
-    score *= 100 # Porcentage
-    print score
+    if calculate_score:
+        print "Score..."
+        score = forest.score(X_predict, y_predict)
+        score *= 100 # Porcentage
+        print score
 
 elif classifier_to_use == "super_vector":
 
@@ -111,7 +136,25 @@ elif classifier_to_use == "super_vector":
     # print "Total is " + str(total)
     # print "Accuracy is " + str(accuracy)
 
-print "****" * 30
+elif classifier_to_use == "neighbors":
+
+    clf = KNeighborsClassifier(n_neighbors=5, n_jobs=-1, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None)
+    print "KNeighbors Done!"
+
+    clf.fit(X, y)
+    print "CLF FIT Done!"
+
+    print 'Predicting...'
+    predition = clf.predict(X_predict).astype(int)
+    print "CLF predictION Done!"
+
+    if calculate_score:
+        print "Score..."
+        score = clf.score(X_predict, y_predict)
+        score *= 100 # Porcentage
+        print score
+
+print "****" * 20
 
 
 
