@@ -22,22 +22,20 @@ def normalise_data(df, test_matrix):
     df['sex'] = df['sex'].map( {'Female': 0, 'Male': 1} ).astype(int)
     df['native-country'] = df['native-country'].map( lambda x: native_country(x) ).astype(int)
 
+    # For the test matrix there is no income
+    # So we don't have to normalize it
     if not test_matrix:
-        # For the test matrix there is no incom
-        # So we don't have to normalize it
         df['income'] = df['income'].map( lambda x: income(x) ).astype(int)
 
     # Check the our dataframse is only containing numbers
     df.dtypes[df.dtypes.map(lambda x: x=='object')]
-    #df['sex'] = df['sex'].map( lambda x: sex(x) ).astype(int)
 
     # Delete unused columns
-    #df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], axis=1)
     # Delete first column refering to user index
-    df = df.drop(df.columns[0], axis=1)
+    df = df.drop(df.columns[0], axis=1)  
+    #df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], axis=1)
 
     return df.values
-
 
 # Get Adults IDs from Test before delete the column
 ids = test_df[test_df.columns[0]]
@@ -45,6 +43,8 @@ ids = test_df[test_df.columns[0]]
 # Normalize Data and remove ID
 train_data = normalise_data(data_df, test_matrix=False)
 test_data  = normalise_data(test_df, test_matrix=True)
+
+print test_data.shape
 
 print 'Training...'
 forest = RandomForestClassifier(n_estimators = 100)
@@ -66,6 +66,15 @@ for i in range(len(predition)):
 
     output.append(value)
 
+print predition
+
+#score = forest.score(predition[0::,1::], test_data[0::,1::])
+#score = forest.score(predition[0::,-1], output[0::,0])
+#print "Score"
+#print score
+
+#for i in range(10):
+#    print output[i]
 
 # test_data_with_output = array(test_data)
 # (test_rows, test_colums) = test_data.shape
@@ -74,10 +83,6 @@ for i in range(len(predition)):
 # for i in range(test_rows):
 #     test_data_with_output[i,last_col] 
 
-# score = forest.score(test_data_with_output[0::,1::], train_data[0::,1::])
-# print "Score"
-# print score
-
 predictions_file = open("adults_output.csv", "wb")
 open_file_object = csv.writer(predictions_file)
 # open_file_object.writerow(["AdultsId","Income"])
@@ -85,3 +90,5 @@ open_file_object = csv.writer(predictions_file)
 open_file_object.writerows(zip(output))
 predictions_file.close()
 print 'Done.'
+
+
