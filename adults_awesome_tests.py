@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+""" Predicting income for American workers
+Authors: Jorge Ferreiro & Carlos Reyes.
+"""
 import pandas as pd
 import numpy as np
 import pylab as P
-import json
 from data_conversion import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -50,6 +52,9 @@ ids = test_df[test_df.columns[0]]
 train_data = normalise_data(data_df, test_matrix=False)
 test_data  = normalise_data(test_df, test_matrix=True)
 
+X = train_data[0:28000,0:13]
+y = train_data[0:28000,14]
+
 print '***********' * 10
 
 if classifier_to_use == "random_forest":
@@ -57,7 +62,7 @@ if classifier_to_use == "random_forest":
     print 'Training...'
 
     forest = RandomForestClassifier(n_estimators = 200)
-    forest = forest.fit(train_data[0:28000,0:13],train_data[0:28000,14])
+    forest = forest.fit(X, y)
 
     print 'Predicting...'
     predition = forest.predict(train_data[28001:30000,0:13]).astype(int)
@@ -68,9 +73,6 @@ if classifier_to_use == "random_forest":
     print score
 
 elif classifier_to_use == "super_vector":
-
-    X = train_data[0:28000,0:13]
-    y = train_data[0:28000,14]
 
     #clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
     clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
