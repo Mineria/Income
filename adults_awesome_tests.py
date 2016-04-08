@@ -11,8 +11,8 @@ from sklearn.linear_model import LogisticRegression
 import csv as csv
 from sklearn import svm
 
-classifier_to_use = "super_vector"
 classifier_to_use = "random_forest"
+classifier_to_use = "super_vector"
 
 # Creating dataframe with CSV file
 data_df = pd.read_csv('Data/data.csv', header=0);
@@ -55,20 +55,23 @@ test_data  = normalise_data(test_df, test_matrix=True)
 X = train_data[0:28000,0:13]
 y = train_data[0:28000,14]
 
+X_predict = train_data[28001:30000, 0:13]
+y_predict = train_data[28001:30000, 14]
+
 print '***********' * 10
 
 if classifier_to_use == "random_forest":
 
-    print 'Training...'
-
     forest = RandomForestClassifier(n_estimators = 200)
+
+    print 'Training...'
     forest = forest.fit(X, y)
 
     print 'Predicting...'
-    predition = forest.predict(train_data[28001:30000,0:13]).astype(int)
+    predition = forest.predict(X_predict).astype(int)
 
     print "Score..."
-    score = forest.score(train_data[28001:30000,0:13], train_data[28001:30000,14])
+    score = forest.score(X_predict, y_predict)
     score *= 100 # Porcentage
     print score
 
@@ -80,17 +83,14 @@ elif classifier_to_use == "super_vector":
     clf.fit(X, y)
     print "CLF FIT Done!"
 
-    predition = clf.predict(train_data[28001:30000,0:13])
+    predition = clf.predict(X_predict)
     print "CLF predictION Done!"
-
-
-    x_svm = train_data[28001:30000,14]
 
     total = len(predition)
     ones = 0.0
 
     for i in range(total):
-    	if predition[i] == x_svm[i]:
+    	if predition[i] == y_predict[i]:
     		ones += 1.0;
 
     accuracy_svm = (ones/total)*100
