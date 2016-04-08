@@ -2,11 +2,15 @@
 import pandas as pd
 import numpy as np
 import pylab as P
+import json
 from data_conversion import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 import csv as csv
 from sklearn import svm
+
+classifier_to_use = "super_vector"
+classifier_to_use = "random_forest"
 
 # Creating dataframe with CSV file
 data_df = pd.read_csv('Data/data.csv', header=0);
@@ -34,7 +38,7 @@ def normalise_data(df, test_matrix):
 
     # Delete unused columns
     # Delete first column refering to user index
-    df = df.drop(df.columns[0], axis=1)  
+    df = df.drop(df.columns[0], axis=1)
     #df = df.drop(['Name', 'Sex', 'Ticket', 'Cabin', 'Embarked'], axis=1)
 
     return df.values
@@ -46,95 +50,68 @@ ids = test_df[test_df.columns[0]]
 train_data = normalise_data(data_df, test_matrix=False)
 test_data  = normalise_data(test_df, test_matrix=True)
 
-print test_data.shape
+print '***********' * 10
 
-print 'Training...'
-#forest = RandomForestClassifier(n_estimators = 200)
-#forest = forest.fit(train_data[0:28000,0:13],train_data[0:28000,14])
+if classifier_to_use == "random_forest":
 
+    print 'Training...'
 
+    forest = RandomForestClassifier(n_estimators = 200)
+    forest = forest.fit(train_data[0:28000,0:13],train_data[0:28000,14])
 
+    print 'Predicting...'
+    predition = forest.predict(train_data[28001:30000,0:13]).astype(int)
 
+    print "Score..."
+    score = forest.score(train_data[28001:30000,0:13], train_data[28001:30000,14])
+    score *= 100 # Porcentage
+    print score
 
-print "****" * 30 
+elif classifier_to_use == "super_vector":
 
+    X = train_data[0:28000,0:13]
+    y = train_data[0:28000,14]
 
+    #clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
+    clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
+    print "CLF Done!"
+    clf.fit(X, y)
+    print "CLF FIT Done!"
 
-
-X = train_data[0:28000,0:13]
-y = train_data[0:28000,14]
-
-#clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
-clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
-print "CLF Done!"
-
-clf.fit(X, y)
-print "CLF FIT Done!"
-
-predition_svm = clf.predict(train_data[28001:30000,0:13])
-print "CLF predictION Done!"
-
-
-x_svm = train_data[28001:30000,14]
-
-total = len(predition_svm)
-ones = 0.0
-
-for i in range(total):
-	if predition_svm[i] == x_svm[i]:
-		ones += 1.0;
-
-accuracy_svm = (ones/total)*100
-print "Accuracy SVM is " + str(accuracy_svm)
+    predition = clf.predict(train_data[28001:30000,0:13])
+    print "CLF predictION Done!"
 
 
+    x_svm = train_data[28001:30000,14]
+
+    total = len(predition)
+    ones = 0.0
+
+    for i in range(total):
+    	if predition[i] == x_svm[i]:
+    		ones += 1.0;
+
+    accuracy_svm = (ones/total)*100
+    print "Accuracy SVM is " + str(accuracy_svm)
+
+    # x = train_data[28001:30000,14]
+    #
+    # total = len(predition)
+    # ones = 0.0
+    #
+    # for i in range(len(predition)):
+    # 	if predition[i] == x[i]:
+    # 		ones += 1.0;
+    #
+    # accuracy = (ones/total)*100
+    #
+    # print "Ones is " + str(ones)
+    # print "Total is " + str(total)
+    # print "Accuracy is " + str(accuracy)
+
+print "****" * 30
 
 
-
-print "****" * 30 
-
-
-
-
-
-
-# print 'Predicting...'
-predition = forest.predict(train_data[28001:30000,0:13]).astype(int)
-print type(train_data)
-
-#print predition
-#print "*"*14
-#print train_data[11001:18000,14]
-#print predition
-
-print "*"*14
-
-
-score = forest.score(train_data[28001:30000,0:13], train_data[28001:30000,14])
-print "Score..."
-print score
-
-x = train_data[28001:30000,14]
-
-total = len(predition)
-ones = 0.0
-
-for i in range(len(predition)):
-	if predition[i] == x[i]:
-		ones += 1.0;
-
-accuracy = (ones/total)*100
-
-print "Ones is " + str(ones)
-print "Total is " + str(total)
-print "Accuracy is " + str(accuracy)
-
-# test_data_with_output = array(test_data)
-# (test_rows, test_colums) = test_data.shape
-# last_col = test_colums
-
-# for i in range(test_rows):
-#     test_data_with_output[i,last_col] 
 
 predictions_file = open("adults_output.csv", "wb")
 open_file_object = csv.writer(predictions_file)
@@ -143,5 +120,3 @@ open_file_object = csv.writer(predictions_file)
 open_file_object.writerows(zip(predition))
 predictions_file.close()
 print 'Done.'
-
-
