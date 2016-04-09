@@ -22,8 +22,8 @@ verbose = False
 warm_start = False
 n_estimators = 1000
 
-calculate_score = True
-use_practise_test_data = False # False to use the train data
+use_practise_test_data = True # False to use the train data
+calculate_score = not use_practise_test_data
 classifier_to_use = "random_forest" # neighbors | super_vector | random_forest
 
 # Creating dataframe with CSV file
