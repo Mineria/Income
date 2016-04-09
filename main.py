@@ -23,6 +23,7 @@ warm_start = False
 n_estimators = 1000
 
 calculate_score = True
+use_practise_test_data = False # False to use the train data
 classifier_to_use = "random_forest" # neighbors | super_vector | random_forest
 
 # Creating dataframe with CSV file
@@ -56,9 +57,6 @@ def normalise_data(df, test_matrix):
     if not test_matrix:
         df['income'] = df['income'].map( lambda x: normalize.income(x) ).astype(int)
 
-    # Check the our dataframse is only containing numbers
-    df.dtypes[df.dtypes.map(lambda x: x=='object')]
-
     # Delete unused columns
     # Delete first column refering to user index
     df = df.drop(df.columns[0], axis=1)
@@ -76,14 +74,20 @@ def make_preditions():
     train_data = normalise_data(data_df, test_matrix=False)
     test_data  = normalise_data(test_df, test_matrix=True)
 
-    X = train_data[5000:25000, 0:-2] #-2 = all features except result column
-    y = train_data[5000:25000,-1] #-1 = last column with results (14)
+    if not use_practise_test_data:
 
-    X_predict = train_data[26000:33000, 0:-2] #-2 = all features except result column
-    y_predict = train_data[26000:33000, -1] #-1 = last column with results (14)
+        X = train_data[0:20000,0:-2] #-2 = all features except result column
+        y = train_data[0:20000,-1] #-1 = last column with results (14)
 
-    # X_predict = test_data[0::, 0:13]
-    # y_predict = []
+        X_predict = train_data[21000:33000, 0:-2] #-2 = all features except result column
+        y_predict = train_data[21000:33000, -1] #-1 = last column with results (14)
+
+    else:
+        X = train_data[::,0:-2] #-2 = all features except result column
+        y = train_data[::,-1] #-1 = last column with results (14)
+
+        X_predict = test_data[0::, 0:13]
+        y_predict = []
 
     if classifier_to_use == "random_forest":
 
@@ -157,7 +161,6 @@ def make_preditions():
 
     print "****" * 20
     return predition
-
 
 display_config()
 predition = make_preditions()
