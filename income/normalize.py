@@ -49,16 +49,14 @@ def education(eduacion):
 def marital_status(estatus):
 	if estatus == 'Married-civ-spouse':
 		valor = 1
-	elif estatus == 'Divorced':
+	elif estatus == 'Divorced' or estatus == 'Separated':
 		valor = 2
 	elif estatus == 'Never-married':
 		valor = 3
-	elif estatus == 'Separated':
-		valor = 4
 	elif estatus == 'Widowed':
-		valor = 5
+		valor = 4
 	elif estatus == 'Married-spouse-absent':
-		valor = 6
+		valor = 5
 	else:
 		valor = 0
 	return valor

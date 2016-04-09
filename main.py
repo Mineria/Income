@@ -29,7 +29,7 @@ classifier_to_use = "random_forest" # neighbors | super_vector | random_fores
 data_df = pd.read_csv('data/data.csv', header=0) # Load the test file into a dataframe
 test_df = pd.read_csv('data/test.csv', header=0)
 
-def print_configuration():
+def display_config():
     print
     print "*** Configuration " + "*" * 30
     print "Classifier: " + str(classifier_to_use or "No Classifier")
@@ -68,97 +68,99 @@ def normalise_data(df, test_matrix):
 
     return df.values
 
-print_configuration()
+def make_preditions():
+    # Get Adults IDs from Test before delete the column
+    ids = test_df[test_df.columns[0]]
 
-# Get Adults IDs from Test before delete the column
-ids = test_df[test_df.columns[0]]
+    # Normalize Data and remove ID
+    train_data = normalise_data(data_df, test_matrix=False)
+    test_data  = normalise_data(test_df, test_matrix=True)
 
-# Normalize Data and remove ID
-train_data = normalise_data(data_df, test_matrix=False)
-test_data  = normalise_data(test_df, test_matrix=True)
+    X = train_data[5000:25000, 0:-2] #-2 = all features except result column
+    y = train_data[5000:25000,-1] #-1 = last column with results (14)
 
-X = train_data[5000:25000, 0:-2] #-2 = all features except result column
-y = train_data[5000:25000,-1] #-1 = last column with results (14)
+    X_predict = train_data[26000:33000, 0:-2] #-2 = all features except result column
+    y_predict = train_data[26000:33000, -1] #-1 = last column with results (14)
 
-X_predict = train_data[26000:33000, 0:-2] #-2 = all features except result column
-y_predict = train_data[26000:33000, -1] #-1 = last column with results (14)
+    # X_predict = test_data[0::, 0:13]
+    # y_predict = []
 
-# X_predict = test_data[0::, 0:13]
-# y_predict = []
+    if classifier_to_use == "random_forest":
 
-if classifier_to_use == "random_forest":
+        forest = RandomForestClassifier(n_estimators=n_estimators, n_jobs=n_jobs, verbose=verbose, warm_start=warm_start)#criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, random_state=None, verbose=1, warm_start=False, class_weight=None)
 
-    forest = RandomForestClassifier(n_estimators=n_estimators, n_jobs=n_jobs, verbose=verbose, warm_start=warm_start)#criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, random_state=None, verbose=1, warm_start=False, class_weight=None)
+        print 'Training...'
+        forest = forest.fit(X, y)
 
-    print 'Training...'
-    forest = forest.fit(X, y)
+        print 'Predicting...'
+        predition = forest.predict(X_predict).astype(int)
 
-    print 'Predicting...'
-    predition = forest.predict(X_predict).astype(int)
+        if calculate_score:
+            print "Score..."
+            score = forest.score(X_predict, y_predict)
+            score *= 100 # Porcentage
+            print score
 
-    if calculate_score:
-        print "Score..."
-        score = forest.score(X_predict, y_predict)
-        score *= 100 # Porcentage
-        print score
+    elif classifier_to_use == "super_vector":
 
-elif classifier_to_use == "super_vector":
+        #clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
+        clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
+        print "CLF Done!"
+        clf.fit(X, y)
+        print "CLF FIT Done!"
 
-    #clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
-    clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
-    print "CLF Done!"
-    clf.fit(X, y)
-    print "CLF FIT Done!"
+        predition = clf.predict(X_predict)
+        print "CLF predictION Done!"
 
-    predition = clf.predict(X_predict)
-    print "CLF predictION Done!"
+        total = len(predition)
+        ones = 0.0
 
-    total = len(predition)
-    ones = 0.0
+        for i in range(total):
+        	if predition[i] == y_predict[i]:
+        		ones += 1.0;
 
-    for i in range(total):
-    	if predition[i] == y_predict[i]:
-    		ones += 1.0;
+        accuracy_svm = (ones/total)*100
+        print "Accuracy SVM is " + str(accuracy_svm)
 
-    accuracy_svm = (ones/total)*100
-    print "Accuracy SVM is " + str(accuracy_svm)
+        # x = train_data[28001:30000,14]
+        #
+        # total = len(predition)
+        # ones = 0.0
+        #
+        # for i in range(len(predition)):
+        # 	if predition[i] == x[i]:
+        # 		ones += 1.0;
+        #
+        # accuracy = (ones/total)*100
+        #
+        # print "Ones is " + str(ones)
+        # print "Total is " + str(total)
+        # print "Accuracy is " + str(accuracy)
 
-    # x = train_data[28001:30000,14]
-    #
-    # total = len(predition)
-    # ones = 0.0
-    #
-    # for i in range(len(predition)):
-    # 	if predition[i] == x[i]:
-    # 		ones += 1.0;
-    #
-    # accuracy = (ones/total)*100
-    #
-    # print "Ones is " + str(ones)
-    # print "Total is " + str(total)
-    # print "Accuracy is " + str(accuracy)
+    elif classifier_to_use == "neighbors":
 
-elif classifier_to_use == "neighbors":
+        clf = KNeighborsClassifier(n_neighbors=5, n_jobs=-1, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None)
+        print "KNeighbors Done!"
 
-    clf = KNeighborsClassifier(n_neighbors=5, n_jobs=-1, weights='uniform', algorithm='auto', leaf_size=30, p=2, metric='minkowski', metric_params=None)
-    print "KNeighbors Done!"
+        clf.fit(X, y)
+        print "CLF FIT Done!"
 
-    clf.fit(X, y)
-    print "CLF FIT Done!"
+        print 'Predicting...'
+        predition = clf.predict(X_predict).astype(int)
+        print "CLF predictION Done!"
 
-    print 'Predicting...'
-    predition = clf.predict(X_predict).astype(int)
-    print "CLF predictION Done!"
+        if calculate_score:
+            print "Score..."
+            score = clf.score(X_predict, y_predict)
+            score *= 100 # Porcentage
+            print score
 
-    if calculate_score:
-        print "Score..."
-        score = clf.score(X_predict, y_predict)
-        score *= 100 # Porcentage
-        print score
-
-print "****" * 20
+    print "****" * 20
+    return predition
 
 
+display_config()
+predition = make_preditions()
 
 predictions_file = open( output_file , "wb")
 open_file_object = csv.writer(predictions_file)
