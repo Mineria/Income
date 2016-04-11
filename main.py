@@ -21,8 +21,9 @@ n_jobs = -1
 verbose = False
 warm_start = False
 n_estimators = 1000
+min_samples_leaf = 9
 
-use_practise_test_data = True # False to use the train data
+use_practise_test_data = False # False to use the train data
 calculate_score = not use_practise_test_data
 classifier_to_use = "random_forest" # neighbors | super_vector | random_forest
 
@@ -62,7 +63,7 @@ def normalise_data(df, test_matrix):
     df = df.drop(df.columns[0], axis=1)
     #df = df.drop(["workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","capital-gain","capital-loss","hours-per-week","native-country"], axis=1)
     #df = df.drop(["workclass","fnlwgt","education","education-num","marital-status","occupation","relationship","race","sex","hours-per-week"], axis=1)
-    # df = df.drop(["capital-gain","capital-loss"], axis=1)
+    # df = df.drop(["-capital-gain","capital-loss"], axis=1)
 
     return df.values
 
@@ -91,7 +92,7 @@ def make_preditions():
 
     if classifier_to_use == "random_forest":
 
-        forest = RandomForestClassifier(n_estimators=n_estimators, n_jobs=n_jobs, verbose=verbose, warm_start=warm_start)#criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, random_state=None, verbose=1, warm_start=False, class_weight=None)
+        forest = RandomForestClassifier(n_estimators=n_estimators, min_samples_leaf=min_samples_leaf, n_jobs=n_jobs, verbose=verbose, warm_start=warm_start)#criterion='gini', max_depth=None, min_samples_split=2, min_samples_leaf=1, min_weight_fraction_leaf=0.0, max_features='auto', max_leaf_nodes=None, bootstrap=True, oob_score=False, random_state=None, verbose=1, warm_start=False, class_weight=None)
 
         print 'Training...'
         forest = forest.fit(X, y)
@@ -110,6 +111,7 @@ def make_preditions():
         #clf = svm.SVC(kernel='rbf') #C=1.0, kernel='polynomial', degree=3, gamma='auto', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, random_state=None)
         clf = LogisticRegression(penalty='l2', dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver='liblinear', max_iter=100, multi_class='ovr', verbose=0, warm_start=False, n_jobs=1)
         print "CLF Done!"
+
         clf.fit(X, y)
         print "CLF FIT Done!"
 
@@ -123,23 +125,8 @@ def make_preditions():
         	if predition[i] == y_predict[i]:
         		ones += 1.0;
 
-        accuracy_svm = (ones/total)*100
+        accuracy_svm = (ones/total) * 100
         print "Accuracy SVM is " + str(accuracy_svm)
-
-        # x = train_data[28001:30000,14]
-        #
-        # total = len(predition)
-        # ones = 0.0
-        #
-        # for i in range(len(predition)):
-        # 	if predition[i] == x[i]:
-        # 		ones += 1.0;
-        #
-        # accuracy = (ones/total)*100
-        #
-        # print "Ones is " + str(ones)
-        # print "Total is " + str(total)
-        # print "Accuracy is " + str(accuracy)
 
     elif classifier_to_use == "neighbors":
 
